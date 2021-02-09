@@ -2,11 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TaskStatusValidationPipe = void 0;
 const common_1 = require("@nestjs/common");
-const task_model_1 = require("../task.model");
+const task_status_enum_1 = require("../task-status.enum");
 class TaskStatusValidationPipe {
     constructor() {
         this.allowedStatuses = [
-            ...Object.values(task_model_1.TaskStatus)
+            ...Object.values(task_status_enum_1.TaskStatus)
         ];
     }
     transform(value, metadata) {

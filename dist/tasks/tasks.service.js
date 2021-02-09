@@ -15,7 +15,11 @@ let TasksService = class TasksService {
         this._tasks = [];
     }
     getTaskIndexById(id) {
-        return this._tasks.findIndex(task => task.id === id);
+        const index = this._tasks.findIndex(task => task.id === id);
+        if (index === -1) {
+            throw new common_1.NotFoundException(`Task with ID "${id}" not found.`);
+        }
+        return index;
     }
     getAllTasks() {
         return this._tasks.slice();

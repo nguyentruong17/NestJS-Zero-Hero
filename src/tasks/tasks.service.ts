@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 
 //models + dtos
@@ -12,7 +12,11 @@ export class TasksService {
     private _tasks: Task[] = [];
 
     getTaskIndexById(id: string): number {
-        return this._tasks.findIndex(task => task.id === id);
+        const index = this._tasks.findIndex(task => task.id === id);
+        if (index === -1) {
+            throw new NotFoundException(`Task with ID "${id}" not found.`);
+        }
+        return index;
     }
 
     getAllTasks(): Task[] {

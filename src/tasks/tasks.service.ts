@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 //repo + entities
 import { TaskRepository } from './task.repository';
 import { Task } from './task.entity';
+import { User } from 'src/auth/user.entity';
 
 //models + dtos
 import { TaskStatus } from './task-status.enum';
@@ -19,17 +20,23 @@ export class TasksService {
     ) {}
 
 
-    getTasksWithFilter(filterDto: GetTasksFilterDto): Promise<Task[]> {
-        return this._taskRepo.getTasks(filterDto);
+    getTasksWithFilter(
+        filterDto: GetTasksFilterDto,
+        user: User): Promise<Task[]> {
+        return this._taskRepo.getTasks(filterDto, user);
     }
 
-    createTask(createdTaskDto: CreateTaskDto): Promise<Task> {
-        return this._taskRepo.createTask(createdTaskDto);
+    createTask(
+        createdTaskDto: CreateTaskDto,
+        user: User): Promise<Task> {
+        return this._taskRepo.createTask(createdTaskDto, user);
     }
 
-    async getTaskById(id: number): Promise<Task> {
-        const found = await this._taskRepo.findOne(id);
+    async getTaskById(id: number, user: User): Promise<Task> {
+        const found = await this._taskRepo.findOne({ where: { id, userId: user.id } });
 
+        //this way, unauthorized will be also counted as not found,
+        // but looks like it's a good practice
         if (!found) {
             throw new NotFoundException(`Task with ID "${id}" not found.`);
         }
@@ -37,8 +44,8 @@ export class TasksService {
         return found;
     }
 
-    async deleteTask(id: number): Promise<boolean> {
-        const found = await this.getTaskById(id);
+    async deleteTask(id: number, user: User): Promise<boolean> {
+        const found = await this.getTaskById(id, user);
         const removed = await this._taskRepo.remove(found);
         if (!removed) {
             return false;
@@ -56,8 +63,8 @@ export class TasksService {
          */
     }
 
-    async updateTask(id: number, status: TaskStatus): Promise<Task> { 
-        const task = await this.getTaskById(id);
+    async updateTask(id: number, user: User, status: TaskStatus): Promise<Task> { 
+        const task = await this.getTaskById(id, user);
         task.status = status;
         await task.save();
 

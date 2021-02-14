@@ -15,67 +15,76 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TasksController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
+const user_entity_1 = require("../auth/user.entity");
 const create_task_dto_1 = require("./dto/create-task.dto");
 const get_tasks_filter_dto_1 = require("./dto/get-tasks-filter.dto");
 const task_status_enum_1 = require("./task-status.enum");
 const task_status_validation_pipe_1 = require("./pipes/task-status-validation.pipe");
 const tasks_service_1 = require("./tasks.service");
+const get_user_decorator_1 = require("../auth/get-user.decorator");
 let TasksController = class TasksController {
     constructor(_taskService) {
         this._taskService = _taskService;
     }
-    getTasks(filterDto) {
-        return this._taskService.getTasksWithFilter(filterDto);
+    getTasks(filterDto, user) {
+        return this._taskService.getTasksWithFilter(filterDto, user);
     }
-    getTaskById(id) {
-        return this._taskService.getTaskById(id);
+    getTaskById(id, user) {
+        return this._taskService.getTaskById(id, user);
     }
-    createTask(createdTaskDto) {
-        return this._taskService.createTask(createdTaskDto);
+    createTask(createdTaskDto, user) {
+        return this._taskService.createTask(createdTaskDto, user);
     }
-    deleteTaskById(id) {
-        return this._taskService.deleteTask(id);
+    deleteTaskById(id, user) {
+        return this._taskService.deleteTask(id, user);
     }
-    updateTaskById(id, status) {
-        return this._taskService.updateTask(id, status);
+    updateTaskById(id, user, status) {
+        return this._taskService.updateTask(id, user, status);
     }
 };
 __decorate([
     common_1.Get(),
     common_1.UsePipes(common_1.ValidationPipe),
     __param(0, common_1.Query()),
+    __param(1, get_user_decorator_1.GetUser()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [get_tasks_filter_dto_1.GetTasksFilterDto]),
+    __metadata("design:paramtypes", [get_tasks_filter_dto_1.GetTasksFilterDto,
+        user_entity_1.User]),
     __metadata("design:returntype", Promise)
 ], TasksController.prototype, "getTasks", null);
 __decorate([
     common_1.Get('/:id'),
     __param(0, common_1.Param('id', common_1.ParseIntPipe)),
+    __param(1, get_user_decorator_1.GetUser()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, user_entity_1.User]),
     __metadata("design:returntype", Promise)
 ], TasksController.prototype, "getTaskById", null);
 __decorate([
     common_1.Post(),
     common_1.UsePipes(common_1.ValidationPipe),
     __param(0, common_1.Body()),
+    __param(1, get_user_decorator_1.GetUser()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_task_dto_1.CreateTaskDto]),
+    __metadata("design:paramtypes", [create_task_dto_1.CreateTaskDto,
+        user_entity_1.User]),
     __metadata("design:returntype", void 0)
 ], TasksController.prototype, "createTask", null);
 __decorate([
     common_1.Delete('/:id'),
     __param(0, common_1.Param('id', common_1.ParseIntPipe)),
+    __param(1, get_user_decorator_1.GetUser()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, user_entity_1.User]),
     __metadata("design:returntype", Promise)
 ], TasksController.prototype, "deleteTaskById", null);
 __decorate([
     common_1.Patch('/:id/status'),
     __param(0, common_1.Param('id', common_1.ParseIntPipe)),
-    __param(1, common_1.Body('status', task_status_validation_pipe_1.TaskStatusValidationPipe)),
+    __param(1, get_user_decorator_1.GetUser()),
+    __param(2, common_1.Body('status', task_status_validation_pipe_1.TaskStatusValidationPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, String]),
+    __metadata("design:paramtypes", [Number, user_entity_1.User, String]),
     __metadata("design:returntype", Promise)
 ], TasksController.prototype, "updateTaskById", null);
 TasksController = __decorate([

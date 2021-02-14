@@ -9,20 +9,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TaskRepository = void 0;
 const typeorm_1 = require("typeorm");
 const task_entity_1 = require("./task.entity");
+const user_entity_1 = require("../auth/user.entity");
 const task_status_enum_1 = require("./task-status.enum");
 let TaskRepository = class TaskRepository extends typeorm_1.Repository {
-    async createTask(createdTaskDto) {
+    async createTask(createdTaskDto, user) {
         const { title, description } = createdTaskDto;
         const task = new task_entity_1.Task();
         task.title = title;
         task.description = description;
         task.status = task_status_enum_1.TaskStatus.OPEN;
+        task.user = user;
         await task.save();
+        delete task.user;
         return task;
     }
-    async getTasks(filterDto) {
+    async getTasks(filterDto, user) {
         const { search, status } = filterDto;
         const query = this.createQueryBuilder('currentTask');
+        query.where('currentTask.userId = :userId', { userId: user.id });
         if (status) {
             query.andWhere('currentTask.status = :status', { status });
         }

@@ -16,33 +16,34 @@ exports.TasksService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const task_repository_1 = require("./task.repository");
+const user_entity_1 = require("../auth/user.entity");
 let TasksService = class TasksService {
     constructor(_taskRepo) {
         this._taskRepo = _taskRepo;
     }
-    getTasksWithFilter(filterDto) {
-        return this._taskRepo.getTasks(filterDto);
+    getTasksWithFilter(filterDto, user) {
+        return this._taskRepo.getTasks(filterDto, user);
     }
-    createTask(createdTaskDto) {
-        return this._taskRepo.createTask(createdTaskDto);
+    createTask(createdTaskDto, user) {
+        return this._taskRepo.createTask(createdTaskDto, user);
     }
-    async getTaskById(id) {
-        const found = await this._taskRepo.findOne(id);
+    async getTaskById(id, user) {
+        const found = await this._taskRepo.findOne({ where: { id, userId: user.id } });
         if (!found) {
             throw new common_1.NotFoundException(`Task with ID "${id}" not found.`);
         }
         return found;
     }
-    async deleteTask(id) {
-        const found = await this.getTaskById(id);
+    async deleteTask(id, user) {
+        const found = await this.getTaskById(id, user);
         const removed = await this._taskRepo.remove(found);
         if (!removed) {
             return false;
         }
         return true;
     }
-    async updateTask(id, status) {
-        const task = await this.getTaskById(id);
+    async updateTask(id, user, status) {
+        const task = await this.getTaskById(id, user);
         task.status = status;
         await task.save();
         return task;

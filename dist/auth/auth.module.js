@@ -11,10 +11,12 @@ const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const passport_1 = require("@nestjs/passport");
 const typeorm_1 = require("@nestjs/typeorm");
+const config = require("config");
 const auth_controller_1 = require("./auth.controller");
 const auth_service_1 = require("./auth.service");
 const jwt_strategy_1 = require("./jwt.strategy");
 const user_repository_1 = require("./user.repository");
+const jwtConfig = config.get('jwt');
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
@@ -22,9 +24,9 @@ AuthModule = __decorate([
         imports: [
             typeorm_1.TypeOrmModule.forFeature([user_repository_1.UserRepository]),
             jwt_1.JwtModule.register({
-                secret: 'topSecret123',
+                secret: process.env.JWT_SECRET || jwtConfig.secret,
                 signOptions: {
-                    expiresIn: 3600,
+                    expiresIn: jwtConfig.expiresIn,
                 }
             }),
             passport_1.PassportModule.register({

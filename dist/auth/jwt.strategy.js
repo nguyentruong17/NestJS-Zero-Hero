@@ -17,12 +17,13 @@ const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const typeorm_1 = require("@nestjs/typeorm");
 const passport_jwt_1 = require("passport-jwt");
+const config = require("config");
 const user_repository_1 = require("./user.repository");
 let JwtStrategy = class JwtStrategy extends passport_1.PassportStrategy(passport_jwt_1.Strategy) {
     constructor(_userRepo) {
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey: 'topSecret123'
+            secretOrKey: process.env.JWT_SECRET || config.get('jwt.secret')
         });
         this._userRepo = _userRepo;
     }

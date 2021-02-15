@@ -3,6 +3,7 @@ import { PassportStrategy } from "@nestjs/passport";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { JwtPayload } from "./jwt-payload.interface";
+import * as config from 'config';
 import { User } from "./user.entity";
 import { UserRepository } from "./user.repository";
 
@@ -14,7 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     ) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), //req will have the token inside the authorization header with the form of 'Bearer <token>'
-            secretOrKey: 'topSecret123'
+            secretOrKey: process.env.JWT_SECRET || config.get('jwt.secret')
         })
     }
 
